@@ -129,13 +129,14 @@ CREATE TABLE public.horario
      CONSTRAINT fk_fk_personal_horario FOREIGN KEY (fk_personal) REFERENCES personal(clave)
 );
 
-CREATE TABLE public.proveedor
+CREATE TABLE public.proveedor  //Para realizar la consulta de los 5 ultimos proveedores o necesitamos una fecha, o un id
 (
+     codigo numeric NOT NULL,
      rif numeric NOT NULL,
      razon_social varchar NOT NULL,
      denominacion_comercial varchar NOT NULL,
      pagina_web varchar NOT NULL,
-     CONSTRAINT pk_rif_proveedor PRIMARY KEY (rif)
+     CONSTRAINT pk_rif_proveedor PRIMARY KEY (codigo)
 );
 
 CREATE TABLE public.proveedor_direccion
@@ -267,9 +268,10 @@ CREATE TABLE public.telefono
      CONSTRAINT fk_fk_proveedor_cliente FOREIGN KEY (fk_proveedor) REFERENCES proveedor(rif)
 );
 
-CREATE TABLE pubic.evento
+CREATE TABLE pubic.evento    //Agregue la fecha del evento, ya que no tenia ni tiene en el ER
 (
      clave numeric NOT NULL,
+     fecha date NOT NULL,
      nombre varchar NOT NULL,
      precio_entrada numeric NOT NULL,
      cant_entrada_disp numeric NOT NULL,
