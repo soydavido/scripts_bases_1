@@ -186,6 +186,52 @@ CREATE TABLE public.venta         //Podriamos evitarnos el atributo codigo y usa
      CONSTRAINT pk_codigo_venta PRIMARY KEY (codigo)
 );
 
+CREATE TABLE public.cliente 
+(
+     rif(13) numeric NOT NULL,
+     tipo varchar(8) NOT NULL,
+     natural_ci numeric(9),
+     natural_nombre varchar(15),
+     natural_apellido varchar(15),
+     juridico_denominacion_comercial varchar(20),
+     juridico_razon_social varchar(20),
+     juridico_pagina_web varchar(20),
+     juridico_capital numeric,
+     CONSTRAINT pk_cliente PRIMARY KEY (rif)
+     CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico'))
+);
+
+CREATE TABLE public.compra //no coloque el atributo tipo ya que no se que significa
+(
+     clave numeric NOT NULL,
+     total_pago numeric NOT NULL,
+     nro_factura numeric NOT NULL,
+     fecha date NOT NULL,
+     fk_tienda_fisica numeric NOT NULL,
+     fk_tienda_virtual numeric NOT NULL,
+     fk_cliente numeric NOT NULL,
+     CONSTRAINT pk_clave_status PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_tienda_fisica_compra FOREIGN KEY (fk_tienda_fisica) REFERENCES tienda(clave),
+     CONSTRAINT fk_fk_tienda_virtual_compra FOREIGN KEY (fk_tienda_virtual) REFERENCES tienda(clave),
+     CONSTRAINT fk_fk_cliente_compra FOREIGN KEY (fk_cliente) REFERENCES cliente(rif)
+
+);
+
+CREATE TABLE public.detalle_compra //Se debe evaluar la posibilidad de eliminar la clave y utilizar numero_factura como la PK de la tabla, no coloque el atributo tipo porque no se que tipo puede ser, la carndinalidad de las FK esta mal, no puede ser doble mandatoria, deberia ser opcional
+(
+     clave numeric NOT NULL,
+     total_pago numeric NOT NULL,
+     numero_factura numeric NOT NULL,
+     fecha date NOT NULL,
+     fk_cliente numeric NOT NULL,
+     fk_tienda_fisica numeric,
+     fk_tienda_virtual numeric,
+     CONSTRAINT pk_clave_detalle_compra PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_cliente_detalle_compra FOREIGN KEY (fk_cliente) REFERENCES cliente(rif),
+     CONSTRAINT fk_fk_tienda_fisica_detalle_compra FOREIGN KEY (fk_tienda_fisica) REFERENCES tienda(clave),
+     CONSTRAINT fk_fk_tienda_virtual_detalle_compra FOREIGN KEY (fk_tienda_virtual) REFERENCES tienda(clave)
+);
+
 CREATE TABLE public.historico_inventario_cerveza
 (
      clave numeric NOT NULL,
@@ -210,21 +256,6 @@ CREATE TABLE public.detalle_venta     // A su vez, un historico inventario no te
      CONSTRAINT pk_codigo_detalle_venta PRIMARY KEY (codigo),
      CONSTRAINT fk_fk_venta_detalle_venta FOREIGN KEY (fk_venta) REFERENCES venta(codigo),
      CONSTRAINT fk_fk_historico_inventario_detalle_venta FOREIGN KEY (fk_historico_inventario) REFERENCES historico_inventario_cerveza(clave)
-);
-
-CREATE TABLE public.cliente 
-(
-     rif(13) numeric NOT NULL,
-     tipo varchar(8) NOT NULL,
-     natural_ci numeric(9),
-     natural_nombre varchar(15),
-     natural_apellido varchar(15),
-     juridico_denominacion_comercial varchar(20),
-     juridico_razon_social varchar(20),
-     juridico_pagina_web varchar(20),
-     juridico_capital numeric,
-     CONSTRAINT pk_cliente PRIMARY KEY (rif)
-     CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico'))
 );
 
 CREATE TABLE public.cliente_direccion
@@ -369,21 +400,6 @@ CREATE TABLE public.tipo_pago_puntos
      CONSTRAINT fk_fk_historico_valor_puntos_tipo_pago_puntos FOREIGN KEY (fk_historico_tasa) REFERENCES historico_valor_puntos(clave)
 );
 
-CREATE TABLE public.detalle_compra //Se debe evaluar la posibilidad de eliminar la clave y utilizar numero_factura como la PK de la tabla, no coloque el atributo tipo porque no se que tipo puede ser, la carndinalidad de las FK esta mal, no puede ser doble mandatoria, deberia ser opcional
-(
-     clave numeric NOT NULL,
-     total_pago numeric NOT NULL,
-     numero_factura numeric NOT NULL,
-     fecha date NOT NULL,
-     fk_cliente numeric NOT NULL,
-     fk_tienda_fisica numeric,
-     fk_tienda_virtual numeric,
-     CONSTRAINT pk_clave_detalle_compra PRIMARY KEY (clave),
-     CONSTRAINT fk_fk_cliente_detalle_compra FOREIGN KEY (fk_cliente) REFERENCES cliente(rif),
-     CONSTRAINT fk_fk_tienda_fisica_detalle_compra FOREIGN KEY (fk_tienda_fisica) REFERENCES tienda(clave),
-     CONSTRAINT fk_fk_tienda_virtual_detalle_compra FOREIGN KEY (fk_tienda_virtual) REFERENCES tienda(clave)
-);
-
 CREATE TABLE public.pago //Borre el atributo fecha compra ya que la fecha esta en la compra como tal. hay que reisar el funcionamiento de esta entidad
 (
      codigo numeric NOT NULL,
@@ -392,4 +408,25 @@ CREATE TABLE public.pago //Borre el atributo fecha compra ya que la fecha esta e
      fk_compra numeric NOT NULL,
      fk_tipo_pago numeric NOT NULL,
      CONSTRAINT pk_codigo_pago PRIMARY KEY (codigo)
-)
+);
+
+CREATE TABLE public.status
+(
+     clave numeric NOT NULL,
+     nombre varchar NOT NULL,
+     CONSTRAINT pk_clave_status PRIMARY KEY (clave)
+);
+
+CREATE TABLE public.status_compra
+(
+     clave numeric NOT NULL,
+     fecha_cambio date NOT NULL,
+     fk_status numeric NOT NULL,
+     fk_compra numeric NOT NULL,
+     fk_departamento numeric NOT NULL,
+     CONSTRAINT pk_clave_status PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_status_status_compra FOREIGN KEY (fk_status) REFERENCES status(clave),
+     CONSTRAINT fk_fk_compra_status_compra FOREIGN KEY (fk_compra) REFERENCES compra(clave),
+     CONSTRAINT fk_fk_departamento_status_compra FOREIGN KEY (fk_departamento) REFERENCES departamento(clave)
+);
+

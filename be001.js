@@ -13,12 +13,12 @@ module.exports={
                 db.connect();
 
                 db.query(textConsulta, (err,res)){
-        	if(err){
+        	  (err){
         		console.log(err.stack());
-        	}
-        	else{
+        	  }
+        	  else{
         		var eventosRecientes = res;
-        	}
+        	  }
         }
 
         //Aqui se usaria el arreglo de JSON para incorporarlo a la pagina de home
@@ -35,16 +35,39 @@ module.exports={
                 db.connect();
 
                 db.query(textConsulta, (err,res)){
-         	if(err){
+         	  if(err){
         		console.log(err.stack());
-        	}
-        	else{
+        	  }
+        	  else{
         		var eventosRecientes = res;
-        	}
-        }
+        	  }
+                }
 
-        //Aqui se usaria el arreglo de JSON para incorporarlo a la pagina de home
+               //Aqui se usaria el arreglo de JSON para incorporarlo a la pagina de home
         
 	}
+
+
+        getDescuentosRecientes: function(req,res,next){
+
+                console.log(req,body);
+                var textConsulta = 'SELECT TOP 5 * FROM descuento ORDER BY codigo DESC';  //Bajo revision el RIF
+
+                var config = require('../database/config');  //A modificar 
+                var db = new postgre.Client(config);
+                db.connect();
+
+                db.query(textConsulta, (err,res)){
+                  if(err){
+                        console.log(err.stack());
+                  }
+                  else{
+                        var eventosRecientes = res;
+                  }
+                }
+
+               //Aqui se usaria el arreglo de JSON para incorporarlo a la pagina de home
+        
+        }
 
 }
