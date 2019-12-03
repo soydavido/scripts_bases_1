@@ -139,6 +139,15 @@ CREATE TABLE public.proveedor  //Para realizar la consulta de los 5 ultimos prov
      CONSTRAINT pk_rif_proveedor PRIMARY KEY (codigo)
 );
 
+CREATE TABLE public.cerveza_proveedor  //Una venta no podria tener una o mas cervezas?
+(
+     clave numeric NOT NULL,
+     fk_cerveza_artesanal numeric NOT NULL,
+     fk_proveedor numeric NOT NULL,
+     CONSTRAINT pk_clave_cerveza_proveedor
+
+);
+
 CREATE TABLE public.proveedor_direccion
 (
      codigo numeric NOT NULL,
@@ -214,7 +223,6 @@ CREATE TABLE public.compra //no coloque el atributo tipo ya que no se que signif
      CONSTRAINT fk_fk_tienda_fisica_compra FOREIGN KEY (fk_tienda_fisica) REFERENCES tienda(clave),
      CONSTRAINT fk_fk_tienda_virtual_compra FOREIGN KEY (fk_tienda_virtual) REFERENCES tienda(clave),
      CONSTRAINT fk_fk_cliente_compra FOREIGN KEY (fk_cliente) REFERENCES cliente(rif)
-
 );
 
 CREATE TABLE public.detalle_compra //Se debe evaluar la posibilidad de eliminar la clave y utilizar numero_factura como la PK de la tabla, no coloque el atributo tipo porque no se que tipo puede ser, la carndinalidad de las FK esta mal, no puede ser doble mandatoria, deberia ser opcional
@@ -428,5 +436,17 @@ CREATE TABLE public.status_compra
      CONSTRAINT fk_fk_status_status_compra FOREIGN KEY (fk_status) REFERENCES status(clave),
      CONSTRAINT fk_fk_compra_status_compra FOREIGN KEY (fk_compra) REFERENCES compra(clave),
      CONSTRAINT fk_fk_departamento_status_compra FOREIGN KEY (fk_departamento) REFERENCES departamento(clave)
+);
+
+CREATE TABLE public.descuento   //Cambie fecha, a fecha_inicio, deberiamos colocar un atributo que sea porcentaje, que sea el porcentaje de descuento, y registrar con precio o porcentaje
+(
+     clave numeric NOT NULL,
+     fecha_inicio date NOT NULL,
+     precio numeric NOT NULL,
+     fk_cerveza numeric NOT NULL,
+     fk_rol numeric NOT NULL,
+     CONSTRAINT pk_clave_status PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_cerveza_descuento FOREIGN KEY (fk_cerveza) REFERENCES cerveza_artesanal(clave),
+     CONSTRAINT fk_fk_rol_descuento FOREIGN KEY (fk_rol) REFERENCES rol(clave)
 );
 
