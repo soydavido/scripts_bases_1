@@ -53,7 +53,7 @@ module.exports={
                 console.log(req,body);
                 var textConsulta = 'SELECT TOP 5 * FROM descuento ORDER BY codigo DESC';  //Bajo revision el RIF
 
-                var config = require('../database/config');  //A modificar 
+                var config = require('../database/config');  // A modificar 
                 var db = new postgre.Client(config);
                 db.connect();
 

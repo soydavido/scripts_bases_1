@@ -145,7 +145,6 @@ CREATE TABLE public.cerveza_proveedor  //Una venta no podria tener una o mas cer
      fk_cerveza_artesanal numeric NOT NULL,
      fk_proveedor numeric NOT NULL,
      CONSTRAINT pk_clave_cerveza_proveedor
-
 );
 
 CREATE TABLE public.proveedor_direccion
@@ -157,6 +156,8 @@ CREATE TABLE public.proveedor_direccion
      CONSTRAINT fk_fk_proveedor_proveedor_direccion FOREIGN KEY (fk_proveedor) REFERENCES proveedor(rif),
      CONSTRAINT fk_fk_direccion_proveedor_direccion FOREIGN KEY (fk_direccion) REFERENCES direccion(clave)
 );
+
+CREATE TABLE
 
 CREATE TABLE public.pasillo
 (
