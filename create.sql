@@ -162,7 +162,7 @@ CREATE TABLE public.personal_beneficio
      CONSTRAINT fk_fk_personal_personal_beneficio FOREIGN KEY (fk_personal) REFERENCES personal(clave),
      CONSTRAINT fk_fk_beneficio_personal_beneficio FOREIGN KEY (fk_beneficio) REFERENCES beneficio(clave)
 );
-
+ 
 CREATE TABLE public.personal_horario 
 (
      clave numeric NOT NULL,
