@@ -9,7 +9,7 @@ CREATE TABLE public.lager
 (
      clave numeric NOT NULL,
      tipo varchar(15) NOT NULL,
-     CONSTRAINT pk_clave_lager PRIMAY KEY (clave)
+     CONSTRAINT pk_clave_lager PRIMARY KEY (clave)
 );
 
 CREATE TABLE public.ingrediente
@@ -19,16 +19,6 @@ CREATE TABLE public.ingrediente
      tipo varchar(15) NOT NULL,
      CONSTRAINT pk_id_ingrediente PRIMARY KEY (id)
 );
-
-CREATE TABLE public.caracteristica      //Que es descripcion, y no deberia ser opcional en todo caso?
-(
-     clave numeric NOT NULL,
-     tipo varchar(15) NOT NULL,
-     valor varchar(15) NOT NULL,
-     descripcion varchar(50) NOT NULL,
-     CONSTRAINT pk_clave_caracteristica PRIMARY KEY (clave)
-);
-
 
 CREATE TABLE public.cerveza_artesanal
 (
@@ -41,6 +31,14 @@ CREATE TABLE public.cerveza_artesanal
      CONSTRAINT pk_clave_cerveza PRIMARY KEY (clave),
      CONSTRAINT fk_ale_cerveza FOREIGN KEY (fk_ale) REFERENCES ale(clave),
      CONSTRAINT fk_lager_cerveza FOREIGN KEY (fk_lager) REFERENCES lager(clave),
+);
+
+CREATE TABLE public.historia_cerveza  //NO ESTA EN EL ER
+     clave numeric NOT NULL,
+     descripcion varchar NOT NULL,
+     fk_cerveza_artesanal numeric NOT NULL,
+     CONSTRAINT pk_clave_historia_cerveza PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_cerveza_artesanal_historia_cerveza FOREIGN KEY (fk_cerveza_artesanal) REFERENCES cerveza_artesanal(clave)
 );
 
 CREATE TABLE public.receta 
@@ -63,6 +61,15 @@ CREATE TABLE public.receta_ingre
      CONSTRAINT fk_fk_receta FOREIGN KEY (fk_receta) REFERENCES receta (clave)
 );   
 
+CREATE TABLE public.caracteristica      //Que es descripcion, y no deberia ser opcional en todo caso?
+(
+     clave numeric NOT NULL,
+     tipo varchar(15) NOT NULL,
+     valor varchar(15) NOT NULL,
+     descripcion varchar(50) NOT NULL,
+     CONSTRAINT pk_clave_caracteristica PRIMARY KEY (clave)
+);
+
 CREATE TABLE public.cerveza_caracteristica  //No se colocan clave compuestas, se coloca un id en la tabla y solo se usan las fk
 (
      id numeric NOT NULL,
@@ -80,22 +87,40 @@ CREATE TABLE public.departamento
      CONSTRAINT pk_clave_departamento PRIMARY KEY (clave)
 );
 
-CREATE TABLE public.direccion //Hay que evaluar si realmente es necesario que un cliente tenga varias direcciones ya que eso podria crearnos bastantes conflictos y hasta una n:n
+CREATE TABLE public.direccion
 (
      clave numeric NOT NULL,
      tipo varchar(10) NOT NULL,
      nombre varchar(1) NOT NULL,
      fk_direccion numeric,
+     CONSTRAINT pk_clave_direccion PRIMARY KEY (clave),
      CONSTRAINT  fk_fk_direccion FOREIGN KEY (fk_direccion) REFERENCES lugar(clave),
      CONSTRAINT chk_tipo_direccion CHECK (tipo in ('Continente','Pais','Estado','Municipio','Parroquia') ) 
 );
 
-CREATE TABLE public.rol
+CREATE TABLE public.privilegio //NO ESTA EN EL ER
+(
+     clave numeric NOT NULL,
+     tipo varchar NOT NULL,
+     tabla varchar NOT NULL,
+     CONSTRAINT pk_clave_privilegio PRIMARY KEY (clave)
+);
+
+CREATE TABLE public.rol   //Por que le quitamos tipo al rol?
 (
      clave numeric NOT NULL,
      nombre varchar(13) NOT NULL,
-     tipo varchar(13) NOT NULL,
      CONSTRAINT pk_clave_rol PRIMARY KEY (clave)
+);
+
+CREATE TABLE public.rol_privilegio
+(
+     clave numeric NOT NULL,
+     fk_rol numeric NOT NULL,
+     fk_privilegio numeric NOT NULL,
+     CONSTRAINT pk_clave_rol_privilegio PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_rol_rol_privilegio FOREIGN KEY (fk_rol) REFERENCES rol(clave),
+     CONSTRAINT fk_fk_privilegio_rol_privilegio FOREIGN KEY (fk_privilegio) REFERENCES privilegio(clave)
 );
 
 CREATE TABLE public.personal
@@ -111,18 +136,45 @@ CREATE TABLE public.personal
      CONSTRAINT fk_fk_rol_personal FOREIGN KEY (fk_rol) REFERENCES rol(clave)
 );
 
-CREATE TABLE public.horario   //REVISAR URGENTE
+CREATE TABLE public.horario 
 (
      clave numeric NOT NULL,
-     fecha_inicio date NOT NULL,
-     fecha_fin date,
-     tipo varchar(10),
-     fk_personal numeric NOT NULL,
-     CONSTRAINT chk_tipo_horario CHECK (tipo in ('Vacaciones','Motivos Familiares','Motivos de salud') ),
-     CONSTRAINT fk_fk_personal_horario FOREIGN KEY (fk_personal) REFERENCES personal(clave)
+     dia varchar NOT NULL,
+     hora_inicio date NOT NULL,
+     hora_fin date NOT NULL,
+     CONSTRAINT pk_clave_horario PRIMARY KEY (clave),
 );
 
-CREATE TABLE public.proveedor  //Coloque fecha de afiliacion para poder responder a consultas como 'El proveedor mas viejo' o el mas reciente
+CREATE TABLE public.beneficio
+(
+     clave numeric NOT NULL,
+     valor numeric NOT NULL,
+     tipo varchar NOT NULL,
+     CONSTRAINT pk_clave_beneficio PRIMARY KEY (clave)
+);
+
+CREATE TABLE public.personal_beneficio
+(
+     clave numeric NOT NULL,
+     fk_beneficio numeric NOT NULL,
+     fk_personal numeric NOT NULL,
+     CONSTRAINT pk_clave_personal_beneficio PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_personal_personal_beneficio FOREIGN KEY (fk_personal) REFERENCES personal(clave),
+     CONSTRAINT fk_fk_beneficio_personal_beneficio FOREIGN KEY (fk_beneficio) REFERENCES beneficio(clave)
+);
+
+CREATE TABLE public.personal_horario 
+(
+     clave numeric NOT NULL,
+     tipo varchar NOT NULL,
+     fk_personal numeric NOT NULL,
+     fk_horario numeric NOT NULL,
+     CONSTRAINT pk_clave_personal_horario PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_personal_personal_horario FOREIGN KEY (fk_personal) REFERENCES personal(clave),
+     CONSTRAINT fk_fk_horario_personal_horario FOREIGN KEY (fk_horario) REFERENCES horario(clave)
+);
+
+CREATE TABLE public.proveedor
 (
      rif numeric NOT NULL,
      razon_social varchar NOT NULL,
@@ -139,7 +191,9 @@ CREATE TABLE public.cerveza_proveedor  //Una venta no podria tener una o mas cer
      clave numeric NOT NULL,
      fk_cerveza_artesanal numeric NOT NULL,
      fk_proveedor numeric NOT NULL,
-     CONSTRAINT pk_clave_cerveza_proveedor
+     CONSTRAINT pk_clave_cerveza_proveedor PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_cerveza_cerveza_proveedor FOREIGN KEY (fk_cerveza_artesanal REFERENCES cerveza_artesanal(clave),
+     CONSTRAINT fk_fk_proveedor_cerveza_proveedor FOREIGN KEY (fk_proveedor) REFERENCES proveedor(rif)
 );
 
 CREATE TABLE public.evento    //Agregue la fecha del evento, ya que no tenia ni tiene en el ER
@@ -148,9 +202,7 @@ CREATE TABLE public.evento    //Agregue la fecha del evento, ya que no tenia ni 
      fecha_inicio date NOT NULL,
      fecha_fin date NOT NULL,
      nombre varchar NOT NULL,
-     precio_entrada numeric NOT NULL,
-     cant_entrada_disp numeric NOT NULL,
-     cant_entrada_vendida varchar NOT NULL,
+     aforo numeric,
      fk_direccion numeric NOT NULL,
      CONSTRAINT pk_clave_evento PRIMARY KEY (clave),
      CONSTRAINT fk_fk_direccion_evento FOREIGN KEY (fk_direccion) REFERENCES direccion(clave)
@@ -219,10 +271,21 @@ CREATE TABLE public.detalle_venta     // A su vez, un historico inventario no te
      CONSTRAINT fk_fk_cerveza_proveedor_detalle_venta FOREIGN KEY (fk_cerveza_proveedor) REFERENCES cerveza_proveedor(clave)
 );
 
+CREATE TABLE public.status_venta   //Falta en el ER
+(
+     clave numeric NOT NULL,
+     fk_status numeric NOT NULL,
+     fk_venta numeric NOT NULL,
+     CONSTRAINT pk_status_venta PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_status_status_venta FOREIGN KEY (fk_status) REFERENCES status(clave),
+     CONSTRAINT fk_fk_venta_status_venta FOREIGN KEY (fk_venta) REFERENCES venta(codigo)
+);
+
 CREATE TABLE public.cliente 
 (
      rif(13) numeric NOT NULL,
      tipo varchar(8) NOT NULL,
+     fk_direccion_fisica numeric NOT NULL,
      natural_ci numeric(9),
      natural_nombre varchar(15),
      natural_apellido varchar(15),
@@ -230,11 +293,26 @@ CREATE TABLE public.cliente
      juridico_razon_social varchar(20),
      juridico_pagina_web varchar(20),
      juridico_capital numeric,
+     juridico_fk_direccion_fiscal numeric NOT NULL,
      CONSTRAINT pk_cliente PRIMARY KEY (rif)
-     CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico'))
+     CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico')),
+     CONSTRAINT fk_fk_direccion_fisica_cliente FOREIGN KEY (fk_direccion_fisica) REFERENCES direccion(clave),
+     CONSTRAINT fk_juridico_fk_direccion_fiscal_cliente FOREIGN KEY (juridico_fk_direccion_fiscal) REFERENCES direccion(clave)
 );
 
-CREATE TABLE public.correo_electronico     //No se que es tipo
+CREATE TABLE public.comentario_cerveza
+(
+     clave numeric NOT NULL,
+     calificacion numeric(1,1) NOT NULL,
+     descripcion varchar(100),
+     fk_cliente numeric NOT NULL,
+     fk_cerveza numeric NOT NULL,
+     CONSTRAINT pk_comentario_cerveza PRIMARY KEY (clave),
+     CONSTRAINT fk_fk_cliente_comentario_cerveza FOREIGN KEY (fk_cliente) REFERENCES cliente(rif),
+     CONSTRAINT fk_fk_cerveza_comentario_cerveza FOREIGN KEY (fk_cerveza) REFERENCES cerveza_artesanal(clave)
+);
+
+CREATE TABLE public.correo_electronico     //No se que es tipo, por lo tanto no se coloco
 (
      clave numeric NOT NULL,
      nombre numeric NOT NULL,
@@ -261,7 +339,6 @@ CREATE TABLE public.compra //no coloque el atributo tipo ya que no se que signif
 CREATE TABLE public.detalle_compra //Falta el fk_rol?
 (
      clave numeric NOT NULL,
-     precio_unitario numeric NOT NULL,
      cantidad numeric NOT NULL,
      fk_compra numeric NOT NULL,
      fk_cerveza numeric NOT NULL,
@@ -287,27 +364,16 @@ CREATE TABLE public.historico_inventario_cerveza   //Fecha final es para ?  REVI
      CONSTRAINT fk_fk_inventario_historico_inventario FOREIGN KEY (fk_inventario) REFERENCES inventario(clave)
 );
 
-CREATE TABLE public.cliente_direccion  //Ambos atributos deberian ser opcionales, tanto fisica como fiscal
-(
-     codigo numeric NOT NULL,
-     fisica char,
-     fiscal char,
-     fk_cliente numeric NOT NULL,
-     fk_direccion numeric NOT NULL,
-     CONSTRAINT pk_codigo_cliente_direccion PRIMARY KEY (codigo),
-     CONSTRAINT fk_fk_cliente_cliente_direcion FOREIGN KEY (fk_cliente) REFERENCES cliente(rif),
-     CONSTRAINT fk_fk_direccion_cliente_direccion FOREIGN KEY (fk_direccion) REFERENCES direccion(clave)
-);
-
-CREATE TABLE public.historico_puntos_cliente  //Falta el check en tipo
+CREATE TABLE public.historico_puntos_cliente  //Falta el chck en tipo
 (
      clave numeric NOT NULL,
      cantidad numeric NOT NULL,
      fecha_cambio date NOT NULL,
-     tipo varchar NOT NULL,
+     tipo char NOT NULL,
      fk_cliente numeric NOT NULL,
      CONSTRAINT pk_clave_historico_puntos_cliente PRIMARY KEY (clave),
      CONSTRAINT fk_fk_cliente_historico_puntos_cliente FOREIGN KEY (fk_cliente) REFERENCES cliente(rif),
+     CONSTRAINT chk_tipo_historico_puntos_cliente CHECK (tipo in('+','-'))
 );
 
 CREATE TABLE public.persona_contacto
@@ -342,12 +408,13 @@ CREATE TABLE public.inventario     //Una zona no deberia tener un solo inventari
      CONSTRAINT fk_fk_zona_inventario   FOREIGN KEY (fk_zona) REFERENCES zona(clave)
 );
 
-CREATE TABLE public.tipo_pago_credito
+CREATE TABLE public.tipo_pago_credito //Agregue cvc, y no se si agregar, nombre impreso en la tarjeta, y cedula, tanto aqui como en debito (donde tambien se deberia agregar el CVC)
 (
      codigo numeric NOT NULL,
      banco varchar(15),
      numero numeric NOT NULL,
      tipo varchar(10) NOT NULL,
+     cvc numeric NOT NULL,
      CONSTRAINT pk_codigo_tipo_pago_credito PRIMARY KEY (codigo),
      CONSTRAINT chk_tipo_tipo_pago_credito CHECK (tipo in('Visa','Mastercard'))
 );
@@ -419,13 +486,35 @@ CREATE TABLE public.tipo_pago_puntos
      CONSTRAINT fk_fk_historico_valor_puntos_tipo_pago_puntos FOREIGN KEY (fk_historico_tasa) REFERENCES historico_valor_puntos(clave)
 );
 
+CREATE TABLE public.cuota_afiliacion  //Cambie cantidad a inversion porque se ve mas lindo, adicional a esto, la cardinalidad entre pago y cuota deberia ser a uno, una cuota deberia cancelarse en un pago, teoricamente
+(
+     clave numeric NOT NULL,
+     inversion numeric NOT NULL,
+     fecha date NOT NULL,
+     fk_proveedor numeric NOT NULL,
+     CONSTRAINT pk_clave_cuota_afiliacion PRIMARY KEY (clave)
+);
+
 CREATE TABLE public.pago //Borre el atributo fecha compra ya que la fecha esta en la compra como tal, FALTA AGREGAR CUOTA AFILIACION, Y OBLIGATORIEDAD
 (
      codigo numeric NOT NULL,
      monto numeric NOT NULL,
-     fk_compra numeric NOT NULL,
-     fk_tipo_pago numeric NOT NULL,
-     CONSTRAINT pk_codigo_pago PRIMARY KEY (codigo)
+     fk_compra numeric,
+     fk_tipo_pago_credito numeric,
+     fk_tipo_pago_debito numeric,
+     fk_tipo_pago_cheque numeric,
+     fl_tipo_pago_efectivo numeric,
+     fk_tipo_pago_puntos numeric,
+     fk_tipo_pago_divisa numeric,
+     fk_cuota_afiliacion numeric,
+     CONSTRAINT pk_codigo_pago PRIMARY KEY (codigo),
+     CONSTRAINT fk_fk_tipo_pago_credito_pago FOREIGN KEY (fk_tipo_pago_credito) REFERENCES tipo_pago_credito(codigo),
+     CONSTRAINT fk_fk_tipo_pago_debito_pago FOREIGN KEY (fk_tipo_pago_debito) REFERENCES tipo_pago_debito(codigo),
+     CONSTRAINT fk_fk_tipo_pago_cheque_pago FOREIGN KEY (fk_tipo_pago_cheque) REFERENCES tipo_pago_cheque(codigo),
+     CONSTRAINT fk_fk_tipo_pago_efectivo_pago FOREIGN KEY (fk_tipo_pago_efectivo) REFERENCES tipo_pago_efectivo(codigo),
+     CONSTRAINT fk_fk_tipo_pago_puntos_pago FOREIGN KEY (fk_tipo_pago_puntos) REFERENCES tipo_pago_puntos(codigo),
+     CONSTRAINT fk_fk_tipo_pago_divisa_pago FOREIGN KEY (fk_tipo_pago_divisa) REFERENCES tipo_pago_divisa(codigo),
+     CONSTRAINT fk_fk_cuota_afiliacion_pago FOREIGN KEY (fk_cuota_afiliacion) REFERENCES cuota_afiliacion(clave)
 );
 
 CREATE TABLE public.status
