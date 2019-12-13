@@ -171,7 +171,8 @@ CREATE TABLE public.personal_horario
      fk_horario numeric NOT NULL,
      CONSTRAINT pk_clave_personal_horario PRIMARY KEY (clave),
      CONSTRAINT fk_fk_personal_personal_horario FOREIGN KEY (fk_personal) REFERENCES personal(clave),
-     CONSTRAINT fk_fk_horario_personal_horario FOREIGN KEY (fk_horario) REFERENCES horario(clave)
+     CONSTRAINT fk_fk_horario_personal_horario FOREIGN KEY (fk_horario) REFERENCES horario(clave),
+     CONSTRAINT chk_tipo_horario_personal CHECK (tipo in('Asistente','Inasistente'))
 );
 
 CREATE TABLE public.proveedor
