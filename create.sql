@@ -201,7 +201,8 @@ CREATE TABLE public.privilegio
      clave numeric NOT NULL DEFAULT nextval('secuencia_privilegio'::regclass),
      tipo varchar NOT NULL,
      tabla varchar NOT NULL,
-     CONSTRAINT pk_clave_privilegio PRIMARY KEY (clave)
+     CONSTRAINT pk_clave_privilegio PRIMARY KEY (clave),
+     CONSTRAINT chk_tipo_privilegio CHECK (tipo in ('Crear','Consultar','Modificar','Eliminar'))
 );
 
 CREATE SEQUENCE public.secuencia_rol
@@ -253,9 +254,11 @@ CREATE TABLE public.personal
      ci numeric(9) NOT NULL,
      salario varchar(11) NOT NULL, 
      cargo varchar(11) NOT NULL,
+     genero varchar NOT NULL,
      fk_rol numeric,
      CONSTRAINT pk_clave_personal PRIMARY KEY (clave),
-     CONSTRAINT fk_fk_rol_personal FOREIGN KEY (fk_rol) REFERENCES rol(clave)
+     CONSTRAINT fk_fk_rol_personal FOREIGN KEY (fk_rol) REFERENCES rol(clave),
+     CONSTRAINT chk_genero_personal CHECK (genero in ('Hombre','Mujer','Otro'))
 );
 
 CREATE SEQUENCE public.secuencia_motivos_laborales
@@ -290,8 +293,8 @@ CREATE TABLE public.horario
 (
      clave numeric NOT NULL DEFAULT nextval('secuencia_horario'::regclass),
      dia varchar NOT NULL,
-     hora_inicio date NOT NULL,
-     hora_fin date NOT NULL,
+     hora_inicio numeric NOT NULL,
+     hora_fin numeric NOT NULL,
      CONSTRAINT pk_clave_horario PRIMARY KEY (clave)
 );
 
@@ -568,6 +571,7 @@ CREATE TABLE public.cliente
      natural_ci numeric(9),
      natural_nombre varchar(15),
      natural_apellido varchar(15),
+     natural_genero varchar,
      juridico_denominacion_comercial varchar(20),
      juridico_razon_social varchar(20),
      juridico_pagina_web varchar(20),
@@ -576,7 +580,8 @@ CREATE TABLE public.cliente
      CONSTRAINT pk_cliente PRIMARY KEY (rif),
      CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico')),
      CONSTRAINT fk_fk_direccion_fisica_cliente FOREIGN KEY (fk_direccion_fisica) REFERENCES direccion(clave),
-     CONSTRAINT fk_juridico_fk_direccion_fiscal_cliente FOREIGN KEY (juridico_fk_direccion_fiscal) REFERENCES direccion(clave)
+     CONSTRAINT fk_juridico_fk_direccion_fiscal_cliente FOREIGN KEY (juridico_fk_direccion_fiscal) REFERENCES direccion(clave),
+     CONSTRAINT chk_natural_genero_cliente CHECK (natural_genero in ('Hombre','Mujer','Otros'))
 );
 
 CREATE SEQUENCE public.secuencia_usuario
@@ -709,7 +714,7 @@ CREATE TABLE public.historico_inventario_cerveza   -- REVISAR la cardinalidad en
      CONSTRAINT pk_clave_historico_inventario_cerveza PRIMARY KEY (clave),
      CONSTRAINT fk_fk_cerveza FOREIGN KEY (fk_cerveza) REFERENCES cerveza_artesanal(clave),
      CONSTRAINT fk_fk_detalle_compra_historico_inventario FOREIGN KEY (fk_detalle_compra) REFERENCES detalle_compra(clave),
-     CONSTRAINT fk_fk_detalle_venta_historico_inventario FOREIGN KEY (fk_detalle_venta) REFERENCES detalle_venta(codigo);
+     CONSTRAINT fk_fk_detalle_venta_historico_inventario FOREIGN KEY (fk_detalle_venta) REFERENCES detalle_venta(codigo),
      CONSTRAINT fk_fk_inventario_historico_inventario FOREIGN KEY (fk_inventario) REFERENCES inventario(clave)
 );
 
