@@ -181,11 +181,11 @@ CREATE TABLE public.direccion
 (
      clave numeric NOT NULL DEFAULT nextval('secuencia_direccion'),
      tipo varchar(10) NOT NULL,
-     nombre varchar(1) NOT NULL,
+     nombre varchar NOT NULL,
      fk_direccion numeric,
      CONSTRAINT pk_clave_direccion PRIMARY KEY (clave),
      CONSTRAINT  fk_fk_direccion FOREIGN KEY (fk_direccion) REFERENCES direccion(clave),
-     CONSTRAINT chk_tipo_direccion CHECK (tipo in ('Continente','Pais','Estado','Municipio','Parroquia') ) 
+     CONSTRAINT chk_tipo_direccion CHECK (tipo in ('Estado','Ciudad','Municipio','Parroquia', 'Avenida', 'Edificio', 'Piso', 'Oficina', 'Apartamento') ) 
 );
 
 CREATE SEQUENCE public.secuencia_privilegio
