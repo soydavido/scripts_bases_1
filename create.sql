@@ -185,7 +185,7 @@ CREATE TABLE public.direccion
      fk_direccion numeric,
      CONSTRAINT pk_clave_direccion PRIMARY KEY (clave),
      CONSTRAINT  fk_fk_direccion FOREIGN KEY (fk_direccion) REFERENCES direccion(clave),
-     CONSTRAINT chk_tipo_direccion CHECK (tipo in ('Estado','Ciudad','Municipio','Parroquia', 'Avenida', 'Edificio', 'Piso', 'Oficina', 'Apartamento') ) 
+     CONSTRAINT chk_tipo_direccion CHECK (tipo in ('Estado','Ciudad','Municipio','Parroquia', 'Avenida', 'Edificio', 'Piso', 'Oficina', 'Apartamento') )
 );
 
 CREATE SEQUENCE public.secuencia_privilegio
@@ -311,7 +311,7 @@ CREATE TABLE public.beneficio
      CONSTRAINT pk_clave_beneficio PRIMARY KEY (clave)
 );
 
-CREATE SEQUENCE public.secuencia_personal_beneficico
+CREATE SEQUENCE public.secuencia_personal_beneficio
      start with 1
      increment 1
      minvalue 1
@@ -515,7 +515,7 @@ CREATE TABLE public.detalle_venta     --A su vez, un historico inventario no ten
      fk_venta numeric NOT NULL,
      fk_cerveza_proveedor numeric NOT NULL,
      CONSTRAINT pk_codigo_detalle_venta PRIMARY KEY (codigo),
-     CONSTRAINT fk_fk_venta_detalle_venta FOREIGN KEY (fk_venta) REFERENCES venta(codigo),
+     CONSTRAINT fk_fk_venta_detalle_venta FOREIGN KEY (fk_venta) REFERENCES venta(nro_factura),
      CONSTRAINT fk_fk_cerveza_proveedor_detalle_venta FOREIGN KEY (fk_cerveza_proveedor) REFERENCES cerveza_proveedor(clave)
 );
 
@@ -549,7 +549,7 @@ CREATE TABLE public.status_venta
      fk_venta numeric NOT NULL,
      CONSTRAINT pk_status_venta PRIMARY KEY (clave),
      CONSTRAINT fk_fk_status_status_venta FOREIGN KEY (fk_status) REFERENCES status(clave),
-     CONSTRAINT fk_fk_venta_status_venta FOREIGN KEY (fk_venta) REFERENCES venta(codigo)
+     CONSTRAINT fk_fk_venta_status_venta FOREIGN KEY (fk_venta) REFERENCES venta(nro_factura)
 );
 
 CREATE SEQUENCE public.secuencia_cliente
@@ -665,7 +665,7 @@ CREATE TABLE public.detalle_compra
      fk_compra numeric NOT NULL,
      fk_cerveza numeric NOT NULL,
      CONSTRAINT pk_clave_detalle_compra PRIMARY KEY (clave),
-     CONSTRAINT fk_fk_compra_detalle_compra FOREIGN KEY (fk_compra) REFERENCES compra(clave),
+     CONSTRAINT fk_fk_compra_detalle_compra FOREIGN KEY (fk_compra) REFERENCES compra(nro_factura),
      CONSTRAINT fk_fk_cerveza_detalle_compra FOREIGN KEY (fk_cerveza) REFERENCES cerveza_artesanal(clave)
 );
 
@@ -705,11 +705,11 @@ CREATE TABLE public.historico_inventario_cerveza   -- REVISAR la cardinalidad en
      fk_cerveza numeric NOT NULL,
      fk_detalle_venta numeric,
      fk_detalle_compra numeric,
-     fk_inventario numeric NOT NULL,
+     fk_inventario numeric,
      CONSTRAINT pk_clave_historico_inventario_cerveza PRIMARY KEY (clave),
      CONSTRAINT fk_fk_cerveza FOREIGN KEY (fk_cerveza) REFERENCES cerveza_artesanal(clave),
      CONSTRAINT fk_fk_detalle_compra_historico_inventario FOREIGN KEY (fk_detalle_compra) REFERENCES detalle_compra(clave),
-     CONSTRAINT fk_fk_detalle_venta_historico_inventario FOREIGN KEY(fk_detalle_venta) REFERENCES detalle_venta(codigo),
+     CONSTRAINT fk_fk_detalle_venta_historico_inventario FOREIGN KEY (fk_detalle_venta) REFERENCES detalle_venta(codigo);
      CONSTRAINT fk_fk_inventario_historico_inventario FOREIGN KEY (fk_inventario) REFERENCES inventario(clave)
 );
 
@@ -980,7 +980,7 @@ CREATE TABLE public.status_compra
      fk_departamento numeric NOT NULL,
      CONSTRAINT pk_clave_status_compra PRIMARY KEY (clave),
      CONSTRAINT fk_fk_status_status_compra FOREIGN KEY (fk_status) REFERENCES status(clave),
-     CONSTRAINT fk_fk_compra_status_compra FOREIGN KEY (fk_compra) REFERENCES compra(clave),
+     CONSTRAINT fk_fk_compra_status_compra FOREIGN KEY (fk_compra) REFERENCES compra(nro_factura),
      CONSTRAINT fk_fk_departamento_status_compra FOREIGN KEY (fk_departamento) REFERENCES departamento(clave)
 );
 
