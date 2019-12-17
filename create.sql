@@ -165,7 +165,7 @@ CREATE SEQUENCE public.secuencia_departamento
 CREATE TABLE public.departamento
 (
      clave numeric NOT NULL DEFAULT nextval('secuencia_departamento'::regclass),  
-     nombre varchar(20) NOT NULL,
+     nombre varchar(50) NOT NULL,
      CONSTRAINT pk_clave_departamento PRIMARY KEY (clave)
 );
 
@@ -216,7 +216,7 @@ CREATE SEQUENCE public.secuencia_rol
 CREATE TABLE public.rol 
 (
      clave numeric NOT NULL DEFAULT nextval('secuencia_rol'),
-     nombre varchar(13) NOT NULL,
+     nombre varchar NOT NULL,
      CONSTRAINT pk_clave_rol PRIMARY KEY (clave)
 );
 
@@ -253,7 +253,7 @@ CREATE TABLE public.personal
      apellido varchar(15) NOT NULL,
      ci numeric(9) NOT NULL,
      salario varchar(11) NOT NULL, 
-     cargo varchar(11) NOT NULL,
+     cargo varchar(50) NOT NULL,
      genero varchar NOT NULL,
      fk_rol numeric,
      CONSTRAINT pk_clave_personal PRIMARY KEY (clave),
@@ -572,11 +572,11 @@ CREATE TABLE public.cliente
      natural_nombre varchar(15),
      natural_apellido varchar(15),
      natural_genero varchar,
-     juridico_denominacion_comercial varchar(20),
-     juridico_razon_social varchar(20),
-     juridico_pagina_web varchar(20),
+     juridico_denominacion_comercial varchar(30),
+     juridico_razon_social varchar(30),
+     juridico_pagina_web varchar(30),
      juridico_capital numeric,
-     juridico_fk_direccion_fiscal numeric NOT NULL,
+     juridico_fk_direccion_fiscal numeric,
      CONSTRAINT pk_cliente PRIMARY KEY (rif),
      CONSTRAINT chk_tipo_cliente CHECK (tipo in ('Natural','Juridico')),
      CONSTRAINT fk_fk_direccion_fisica_cliente FOREIGN KEY (fk_direccion_fisica) REFERENCES direccion(clave),
@@ -786,7 +786,7 @@ CREATE SEQUENCE public.secuencia_tipo_pago_credito
 CREATE TABLE public.tipo_pago_credito 
 (
      codigo numeric NOT NULL DEFAULT nextval('secuencia_tipo_pago_credito'::regclass),
-     banco varchar(15),
+     banco varchar(25),
      numero numeric NOT NULL,
      tipo varchar(10) NOT NULL,
      cvc numeric NOT NULL,
@@ -807,7 +807,7 @@ CREATE SEQUENCE public.secuencia_tipo_pago_debito
 CREATE TABLE public.tipo_pago_debito
 (
      codigo numeric NOT NULL DEFAULT nextval('secuencia_tipo_pago_debito'::regclass),
-     banco varchar(15),
+     banco varchar(25),
      numero numeric NOT NULL,
      tipo varchar(10) NOT NULL,
      cvc numeric NOT NULL,
